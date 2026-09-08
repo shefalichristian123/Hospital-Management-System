@@ -1,0 +1,1231 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Patients - Hospital Management System</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================== */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #1769aa;
+            color: white;
+            padding: 20px 15px;
+            z-index: 1000;
+        }
+
+        .logo-section {
+            text-align: center;
+            padding: 10px 5px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .logo {
+            width: 55px;
+            height: 55px;
+            margin: auto;
+            border-radius: 50%;
+            background: white;
+            color: #1769aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .logo-section h2 {
+            font-size: 18px;
+            margin-top: 12px;
+        }
+
+        .logo-section p {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .menu {
+            list-style: none;
+            margin-top: 25px;
+        }
+
+        .menu li {
+            margin-bottom: 7px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: rgba(255,255,255,0.18);
+        }
+
+        .menu-icon {
+            width: 22px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        /* =========================
+           MAIN
+        ========================== */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           TOPBAR
+        ========================== */
+
+        .topbar {
+            height: 75px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .topbar h1 {
+            font-size: 23px;
+        }
+
+        .topbar p {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .user-info span {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #1769aa;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            text-decoration: none;
+            padding: 9px 14px;
+            border-radius: 7px;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            font-size: 13px;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        /* =========================
+           CONTENT
+        ========================== */
+
+        .content {
+            padding: 30px;
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .page-header h2 {
+            font-size: 22px;
+        }
+
+        .page-header p {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .add-btn {
+            border: none;
+            background: #1769aa;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .add-btn:hover {
+            background: #12558b;
+        }
+
+        /* =========================
+           FORM
+        ========================== */
+
+        .form-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            display: none;
+        }
+
+        .form-card.show {
+            display: block;
+        }
+
+        .form-card h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 7px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #1769aa;
+            box-shadow: 0 0 0 3px rgba(23,105,170,0.1);
+        }
+
+        textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        .form-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .save-btn {
+            border: none;
+            background: #1769aa;
+            color: white;
+            padding: 11px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .cancel-btn {
+            border: 1px solid #d1d5db;
+            background: white;
+            color: #374151;
+            padding: 11px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        /* =========================
+           SEARCH
+        ========================== */
+
+        .table-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-header h3 {
+            font-size: 17px;
+        }
+
+        .search-box {
+            width: 250px;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: #1769aa;
+        }
+
+        /* =========================
+           TABLE
+        ========================== */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #374151;
+            font-size: 12px;
+            text-align: left;
+            padding: 14px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        tr:hover {
+            background: #fafcff;
+        }
+
+        .patient-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .gender {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #eef5fb;
+            color: #1769aa;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        .blood-group {
+            font-weight: 600;
+            color: #b91c1c;
+        }
+
+        .delete-btn {
+            text-decoration: none;
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 11px;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+            color: white;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================== */
+
+        @media (max-width: 900px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 70px;
+                padding: 15px 8px;
+            }
+
+            .logo-section h2,
+            .logo-section p,
+            .menu a span:not(.menu-icon) {
+                display: none;
+            }
+
+            .logo {
+                width: 45px;
+                height: 45px;
+                font-size: 23px;
+            }
+
+            .menu a {
+                justify-content: center;
+                padding: 12px 5px;
+            }
+
+            .main {
+                margin-left: 70px;
+            }
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .page-header {
+                align-items: flex-start;
+                gap: 15px;
+                flex-direction: column;
+            }
+
+            .table-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo-section">
+
+            <div class="logo">
+                +
+            </div>
+
+            <h2>Hospital Management</h2>
+
+            <p>Management System</p>
+
+        </div>
+
+        <ul class="menu">
+
+            <li>
+                <a href="{{ url_for('dashboard') }}">
+                    <span class="menu-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('patients') }}" class="active">
+                    <span class="menu-icon">♟</span>
+                    <span>Patients</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('doctors') }}">
+                    <span class="menu-icon">⚕</span>
+                    <span>Doctors</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('appointments') }}">
+                    <span class="menu-icon">▣</span>
+                    <span>Appointments</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('medicines') }}">
+                    <span class="menu-icon">✚</span>
+                    <span>Pharmacy</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('billing') }}">
+                    <span class="menu-icon">₹</span>
+                    <span>Billing</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">
+                    <span class="menu-icon">↪</span>
+                    <span>Logout</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN
+    ========================== -->
+
+    <main class="main">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+                <h1>Patients</h1>
+                <p>Patient registration and management</p>
+            </div>
+
+            <div class="user-area">
+
+                <div class="user-info">
+
+                    <strong>
+                        {{ session.get("username", "Admin") }}
+                    </strong>
+
+                    <span>
+                        {{ session.get("role", "Administrator") }}
+                    </span>
+
+                </div>
+
+                <div class="user-avatar">
+                    {{ session.get("username", "A")[0]|upper }}
+                </div>
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="logout-btn"
+                >
+                    Logout
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="content">
+
+            <!-- PAGE HEADER -->
+
+            <div class="page-header">
+
+                <div>
+                    <h2>Patient Management</h2>
+
+                    <p>
+                        Add, view and manage hospital patients
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    class="add-btn"
+                    id="addPatientButton"
+                >
+                    + Add Patient
+                </button>
+
+            </div>
+
+
+            <!-- =========================
+                 ADD PATIENT FORM
+            ========================== -->
+
+            <div
+                class="form-card"
+                id="patientFormCard"
+            >
+
+                <h3>
+                    Register New Patient
+                </h3>
+
+                <form
+                    action="{{ url_for('add_patient') }}"
+                    method="POST"
+                    id="patientForm"
+                >
+
+                    <div class="form-grid">
+
+                        <!-- Name -->
+
+                        <div class="form-group">
+
+                            <label for="name">
+                                Full Name *
+                            </label>
+
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                placeholder="Enter patient's full name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Age -->
+
+                        <div class="form-group">
+
+                            <label for="age">
+                                Age *
+                            </label>
+
+                            <input
+                                type="number"
+                                id="age"
+                                name="age"
+                                min="0"
+                                max="150"
+                                placeholder="Enter age"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Gender -->
+
+                        <div class="form-group">
+
+                            <label for="gender">
+                                Gender *
+                            </label>
+
+                            <select
+                                id="gender"
+                                name="gender"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Gender
+                                </option>
+
+                                <option value="Male">
+                                    Male
+                                </option>
+
+                                <option value="Female">
+                                    Female
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Phone -->
+
+                        <div class="form-group">
+
+                            <label for="phone">
+                                Phone Number *
+                            </label>
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                placeholder="Enter phone number"
+                                maxlength="15"
+                                required
+                            >
+
+                        </div>
+
+
+                        <!-- Email -->
+
+                        <div class="form-group">
+
+                            <label for="email">
+                                Email
+                            </label>
+
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                placeholder="Enter email address"
+                            >
+
+                        </div>
+
+
+                        <!-- Blood Group -->
+
+                        <div class="form-group">
+
+                            <label for="blood_group">
+                                Blood Group
+                            </label>
+
+                            <select
+                                id="blood_group"
+                                name="blood_group"
+                            >
+
+                                <option value="">
+                                    Select Blood Group
+                                </option>
+
+                                <option value="A+">
+                                    A+
+                                </option>
+
+                                <option value="A-">
+                                    A-
+                                </option>
+
+                                <option value="B+">
+                                    B+
+                                </option>
+
+                                <option value="B-">
+                                    B-
+                                </option>
+
+                                <option value="AB+">
+                                    AB+
+                                </option>
+
+                                <option value="AB-">
+                                    AB-
+                                </option>
+
+                                <option value="O+">
+                                    O+
+                                </option>
+
+                                <option value="O-">
+                                    O-
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- Address -->
+
+                        <div class="form-group full">
+
+                            <label for="address">
+                                Address
+                            </label>
+
+                            <textarea
+                                id="address"
+                                name="address"
+                                placeholder="Enter patient's address"
+                            ></textarea>
+
+                        </div>
+
+
+                        <!-- Medical History -->
+
+                        <div class="form-group full">
+
+                            <label for="medical_history">
+                                Medical History
+                            </label>
+
+                            <textarea
+                                id="medical_history"
+                                name="medical_history"
+                                placeholder="Enter medical history, allergies, previous conditions, etc."
+                            ></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- BUTTONS -->
+
+                    <div class="form-actions">
+
+                        <button
+                            type="submit"
+                            class="save-btn"
+                        >
+                            Save Patient
+                        </button>
+
+                        <button
+                            type="button"
+                            class="cancel-btn"
+                            id="cancelButton"
+                        >
+                            Cancel
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+
+            <!-- =========================
+                 PATIENT TABLE
+            ========================== -->
+
+            <div class="table-card">
+
+                <div class="table-header">
+
+                    <h3>
+                        Registered Patients
+                    </h3>
+
+                    <input
+                        type="text"
+                        id="searchPatient"
+                        class="search-box"
+                        placeholder="Search patients..."
+                    >
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    {% if patients %}
+
+                    <table id="patientsTable">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    #
+                                </th>
+
+                                <th>
+                                    Patient Name
+                                </th>
+
+                                <th>
+                                    Age
+                                </th>
+
+                                <th>
+                                    Gender
+                                </th>
+
+                                <th>
+                                    Phone
+                                </th>
+
+                                <th>
+                                    Email
+                                </th>
+
+                                <th>
+                                    Blood Group
+                                </th>
+
+                                <th>
+                                    Address
+                                </th>
+
+                                <th>
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% for patient in patients %}
+
+                            <tr>
+
+                                <td>
+                                    {{ loop.index }}
+                                </td>
+
+                                <td class="patient-name">
+                                    {{ patient.get("name", "-") }}
+                                </td>
+
+                                <td>
+                                    {{ patient.get("age", "-") }}
+                                </td>
+
+                                <td>
+
+                                    <span class="gender">
+                                        {{ patient.get("gender", "-") }}
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    {{ patient.get("phone", "-") }}
+                                </td>
+
+                                <td>
+                                    {{ patient.get("email", "-") }}
+                                </td>
+
+                                <td class="blood-group">
+                                    {{ patient.get("blood_group", "-") }}
+                                </td>
+
+                                <td>
+                                    {{ patient.get("address", "-") }}
+                                </td>
+
+                                <td>
+
+                                    <a
+                                        href="{{ url_for('delete_patient', patient_id=patient['_id']) }}"
+                                        class="delete-btn"
+                                        onclick="return confirm('Are you sure you want to delete this patient?');"
+                                    >
+                                        Delete
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                    {% else %}
+
+                    <div class="empty-message">
+
+                        No patients registered yet.
+
+                        <br><br>
+
+                        Click
+                        <strong>+ Add Patient</strong>
+                        to register the first patient.
+
+                    </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script>
+
+        const addPatientButton =
+            document.getElementById("addPatientButton");
+
+        const patientFormCard =
+            document.getElementById("patientFormCard");
+
+        const cancelButton =
+            document.getElementById("cancelButton");
+
+        const patientForm =
+            document.getElementById("patientForm");
+
+
+        // Open patient form
+
+        addPatientButton.addEventListener(
+            "click",
+            function () {
+
+                patientFormCard.classList.add("show");
+
+                patientFormCard.scrollIntoView({
+                    behavior: "smooth"
+                });
+
+            }
+        );
+
+
+        // Close patient form
+
+        cancelButton.addEventListener(
+            "click",
+            function () {
+
+                patientForm.reset();
+
+                patientFormCard.classList.remove("show");
+
+            }
+        );
+
+
+        // Patient search
+
+        const searchPatient =
+            document.getElementById("searchPatient");
+
+        searchPatient.addEventListener(
+            "keyup",
+            function () {
+
+                const searchValue =
+                    this.value.toLowerCase().trim();
+
+                const rows =
+                    document.querySelectorAll(
+                        "#patientsTable tbody tr"
+                    );
+
+                rows.forEach(function (row) {
+
+                    const rowText =
+                        row.textContent.toLowerCase();
+
+                    if (rowText.includes(searchValue)) {
+
+                        row.style.display = "";
+
+                    } else {
+
+                        row.style.display = "none";
+
+                    }
+
+                });
+
+            }
+        );
+
+
+        // Phone number validation
+
+        const phoneInput =
+            document.getElementById("phone");
+
+        phoneInput.addEventListener(
+            "input",
+            function () {
+
+                this.value =
+                    this.value.replace(
+                        /[^0-9+ ]/g,
+                        ""
+                    );
+
+            }
+        );
+
+
+        // Form validation
+
+        patientForm.addEventListener(
+            "submit",
+            function (event) {
+
+                const name =
+                    document.getElementById("name").value.trim();
+
+                const age =
+                    document.getElementById("age").value;
+
+                const gender =
+                    document.getElementById("gender").value;
+
+                const phone =
+                    document.getElementById("phone").value.trim();
+
+
+                if (
+                    name === "" ||
+                    age === "" ||
+                    gender === "" ||
+                    phone === ""
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please fill all required fields."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    parseInt(age) < 0 ||
+                    parseInt(age) > 150
+                ) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter a valid age."
+                    );
+
+                    return;
+
+                }
+
+
+                if (phone.length < 7) {
+
+                    event.preventDefault();
+
+                    alert(
+                        "Please enter a valid phone number."
+                    );
+
+                    return;
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

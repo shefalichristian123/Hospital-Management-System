@@ -1,0 +1,856 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - Hospital Management System</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================== */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #1769aa;
+            color: white;
+            padding: 20px 15px;
+            z-index: 1000;
+        }
+
+        .logo-section {
+            text-align: center;
+            padding: 10px 5px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .logo {
+            width: 55px;
+            height: 55px;
+            margin: auto;
+            border-radius: 50%;
+            background: white;
+            color: #1769aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .logo-section h2 {
+            font-size: 19px;
+            margin-top: 12px;
+        }
+
+        .logo-section p {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .menu {
+            list-style: none;
+            margin-top: 25px;
+        }
+
+        .menu li {
+            margin-bottom: 7px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .menu a:hover,
+        .menu a.active {
+            background: rgba(255,255,255,0.18);
+        }
+
+        .menu-icon {
+            width: 22px;
+            text-align: center;
+            font-size: 17px;
+        }
+
+        /* =========================
+           MAIN CONTENT
+        ========================== */
+
+        .main {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        /* =========================
+           TOP BAR
+        ========================== */
+
+        .topbar {
+            height: 75px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .topbar h1 {
+            font-size: 23px;
+            color: #1f2937;
+        }
+
+        .topbar p {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .user-info span {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .user-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #1769aa;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            text-decoration: none;
+            padding: 9px 14px;
+            border-radius: 7px;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            color: white;
+        }
+
+        /* =========================
+           CONTENT
+        ========================== */
+
+        .content {
+            padding: 30px;
+        }
+
+        .welcome-box {
+            background: linear-gradient(135deg, #1769aa, #2386c8);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .welcome-box h2 {
+            font-size: 22px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-box p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* =========================
+           STATISTICS CARDS
+        ========================== */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .stat-info h3 {
+            font-size: 28px;
+            color: #1f2937;
+        }
+
+        .stat-info p {
+            color: #6b7280;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background: #e8f2fb;
+            color: #1769aa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 23px;
+        }
+
+        /* =========================
+           QUICK ACTIONS
+        ========================== */
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .action-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 22px;
+            text-decoration: none;
+            color: #1f2937;
+            transition: 0.2s;
+        }
+
+        .action-card:hover {
+            border-color: #1769aa;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 26px;
+            margin-bottom: 12px;
+        }
+
+        .action-card h3 {
+            font-size: 15px;
+            margin-bottom: 6px;
+        }
+
+        .action-card p {
+            color: #6b7280;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        /* =========================
+           SYSTEM INFORMATION
+        ========================== */
+
+        .info-section {
+            margin-top: 30px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 22px;
+        }
+
+        .info-section h2 {
+            font-size: 17px;
+            margin-bottom: 18px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .info-item {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .info-item span {
+            display: block;
+            color: #6b7280;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .info-item strong {
+            font-size: 14px;
+        }
+
+        /* =========================
+           MOBILE
+        ========================== */
+
+        @media (max-width: 1100px) {
+
+            .stats-grid,
+            .quick-actions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                width: 70px;
+                padding: 15px 8px;
+            }
+
+            .logo-section h2,
+            .logo-section p,
+            .menu a span:not(.menu-icon) {
+                display: none;
+            }
+
+            .logo {
+                width: 45px;
+                height: 45px;
+                font-size: 23px;
+            }
+
+            .menu a {
+                justify-content: center;
+                padding: 12px 5px;
+            }
+
+            .main {
+                margin-left: 70px;
+            }
+
+            .topbar {
+                padding: 0 15px;
+            }
+
+            .topbar h1 {
+                font-size: 18px;
+            }
+
+            .user-info {
+                display: none;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .stats-grid,
+            .quick-actions,
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         SIDEBAR
+    ========================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo-section">
+
+            <div class="logo">
+                +
+            </div>
+
+            <h2>Hospital Management</h2>
+
+            <p>Management System</p>
+
+        </div>
+
+
+        <ul class="menu">
+
+            <li>
+                <a href="{{ url_for('dashboard') }}" class="active">
+                    <span class="menu-icon">⌂</span>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('patients') }}">
+                    <span class="menu-icon">♟</span>
+                    <span>Patients</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('doctors') }}">
+                    <span class="menu-icon">⚕</span>
+                    <span>Doctors</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('appointments') }}">
+                    <span class="menu-icon">▣</span>
+                    <span>Appointments</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('medicines') }}">
+                    <span class="menu-icon">✚</span>
+                    <span>Pharmacy</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('billing') }}">
+                    <span class="menu-icon">₹</span>
+                    <span>Billing</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ url_for('logout') }}">
+                    <span class="menu-icon">↪</span>
+                    <span>Logout</span>
+                </a>
+            </li>
+
+        </ul>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="main">
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div>
+                <h1>Dashboard</h1>
+                <p>Hospital Management System</p>
+            </div>
+
+
+            <div class="user-area">
+
+                <div class="user-info">
+                    <strong>
+                        {{ session.get("username", "Admin") }}
+                    </strong>
+
+                    <span>
+                        {{ session.get("role", "Administrator") }}
+                    </span>
+                </div>
+
+                <div class="user-avatar">
+                    {{ session.get("username", "A")[0]|upper }}
+                </div>
+
+                <a
+                    href="{{ url_for('logout') }}"
+                    class="logout-btn"
+                >
+                    Logout
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+
+        <section class="content">
+
+            <!-- WELCOME -->
+
+            <div class="welcome-box">
+
+                <h2>
+                    Welcome, {{ session.get("username", "Admin") }}!
+                </h2>
+
+                <p>
+                    Manage patients, doctors, appointments,
+                    medicines and billing from one place.
+                </p>
+
+            </div>
+
+
+            <!-- STATISTICS -->
+
+            <div class="stats-grid">
+
+                <!-- Patients -->
+
+                <div class="stat-card">
+
+                    <div class="stat-info">
+
+                        <h3>
+                            {{ total_patients }}
+                        </h3>
+
+                        <p>Total Patients</p>
+
+                    </div>
+
+                    <div class="stat-icon">
+                        ♟
+                    </div>
+
+                </div>
+
+
+                <!-- Doctors -->
+
+                <div class="stat-card">
+
+                    <div class="stat-info">
+
+                        <h3>
+                            {{ total_doctors }}
+                        </h3>
+
+                        <p>Total Doctors</p>
+
+                    </div>
+
+                    <div class="stat-icon">
+                        ⚕
+                    </div>
+
+                </div>
+
+
+                <!-- Appointments -->
+
+                <div class="stat-card">
+
+                    <div class="stat-info">
+
+                        <h3>
+                            {{ total_appointments }}
+                        </h3>
+
+                        <p>Appointments</p>
+
+                    </div>
+
+                    <div class="stat-icon">
+                        ▣
+                    </div>
+
+                </div>
+
+
+                <!-- Medicines -->
+
+                <div class="stat-card">
+
+                    <div class="stat-info">
+
+                        <h3>
+                            {{ total_medicines }}
+                        </h3>
+
+                        <p>Medicines</p>
+
+                    </div>
+
+                    <div class="stat-icon">
+                        ✚
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUICK ACTIONS -->
+
+            <h2 class="section-title">
+                Quick Actions
+            </h2>
+
+
+            <div class="quick-actions">
+
+                <a
+                    href="{{ url_for('patients') }}"
+                    class="action-card"
+                >
+
+                    <div class="action-icon">
+                        ♟
+                    </div>
+
+                    <h3>
+                        Manage Patients
+                    </h3>
+
+                    <p>
+                        Register and manage patient
+                        information and medical records.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('doctors') }}"
+                    class="action-card"
+                >
+
+                    <div class="action-icon">
+                        ⚕
+                    </div>
+
+                    <h3>
+                        Manage Doctors
+                    </h3>
+
+                    <p>
+                        Add doctors and manage their
+                        specialization and details.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('appointments') }}"
+                    class="action-card"
+                >
+
+                    <div class="action-icon">
+                        ▣
+                    </div>
+
+                    <h3>
+                        Appointments
+                    </h3>
+
+                    <p>
+                        Schedule and manage patient
+                        appointments.
+                    </p>
+
+                </a>
+
+
+                <a
+                    href="{{ url_for('billing') }}"
+                    class="action-card"
+                >
+
+                    <div class="action-icon">
+                        ₹
+                    </div>
+
+                    <h3>
+                        Billing
+                    </h3>
+
+                    <p>
+                        Create patient bills and
+                        manage payment status.
+                    </p>
+
+                </a>
+
+            </div>
+
+
+            <!-- SYSTEM INFORMATION -->
+
+            <div class="info-section">
+
+                <h2>
+                    System Information
+                </h2>
+
+
+                <div class="info-grid">
+
+                    <div class="info-item">
+
+                        <span>
+                            Logged-in User
+                        </span>
+
+                        <strong>
+                            {{ session.get("username", "Admin") }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            User Role
+                        </span>
+
+                        <strong>
+                            {{ session.get("role", "Administrator") }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            Database
+                        </span>
+
+                        <strong>
+                            MongoDB
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            Backend
+                        </span>
+
+                        <strong>
+                            Python Flask
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            Frontend
+                        </span>
+
+                        <strong>
+                            HTML5 / CSS3 / JavaScript
+                        </strong>
+
+                    </div>
+
+
+                    <div class="info-item">
+
+                        <span>
+                            System Status
+                        </span>
+
+                        <strong>
+                            Active
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script>
+
+        // Simple dashboard page initialization
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                console.log(
+                    "Hospital Management Dashboard Loaded"
+                );
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
